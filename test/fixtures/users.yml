@@ -1,0 +1,30 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: MyString
+  password: MyString
+
+two:
+  email: MyString
+  password: MyString
+
+vanja:
+  email: vanja@rbt.com
+  password: 1234
+
+marija:
+  email: mara@etf.com
+  password: 2211
+
+jovan:
+  email:
+  password: 12345
+
+ivan:
+  email: ivan@yahoo.com
+  password: 222n
+
+#marko:
+#  email: marko@yahoo.com
+#  password: 34567
+#  birthday: 13/2/1991
