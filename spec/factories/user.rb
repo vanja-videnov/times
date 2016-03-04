@@ -3,6 +3,7 @@ FactoryGirl.define do
     email "vaca@rbt.com"
     password "1234rtg"
     phone "1234567890"
+    user_type "1"
   end
 
 

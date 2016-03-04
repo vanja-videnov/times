@@ -1,60 +1,92 @@
 require 'rails_helper'
 
 RSpec.describe Post, type: :model do
-  subject { described_class.new(title: title) }
+  subject { Post.new(title: title, body: body) }
   let(:title) { 'My new title' }
-
-  # let(:post) { FactoryGirl.create(:post, title: title) }
-  # it { expect(post).to be_valid }
+  let(:body) { 'This is my body' }
 
   it { should be_valid }
 
-  describe "#title" do
+  shared_examples_for 'invalid post' do
+    it { should be_invalid }
+  end
 
-    context "too short" do
+  describe '#title' do
+
+    context 'when is too short' do
       let(:title) { 'short' }
 
-      it { should be_invalid }
-
-      # before do
-      #   post.title = ""
-      #   possst= FactoryGirl.create(:short_title_post)
-      # end
-      #
-      # it { expect(possst).to be_invalid }
+      it_behaves_like 'invalid post'
     end
 
-    context "too long" do
+    context 'too long' do
+      let(:title) { 's'*16 }
 
+      it_behaves_like 'invalid post'
     end
 
-    context 'DB' do
-      subject { FactoryGirl.build(:post, title: title) }
+    context 'when is not present' do
+      let(:title) { '' }
 
-      it { should be_valid}
-
-      context 'too short' do
-        let(:title) { 'short' }
-
-        it { should be_invalid }      end
+      it_behaves_like 'invalid post'
     end
 
-    context 'DB persist' do
-      subject { FactoryGirl.create(:post, title: title) }
+    context 'when is nil' do
+      let(:title) { nil }
 
-      it { should be_truthy}
+      it_behaves_like 'invalid post'
+    end
+  end
 
-      it do
-        expect(subject).to be_truthy
-      end
+  describe '#body' do
 
-      context 'too short' do
-        let(:title) { 'short' }
+    context 'when is too short' do
+      let(:body) { 's'*5 }
 
-        it 'raise exception on save' do
-          expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
-        end
-      end
+      it_behaves_like 'invalid post'
+    end
+
+    context 'when is too long' do
+      let(:body) { 's'*155 }
+
+      it_behaves_like 'invalid post'
+    end
+
+    context 'when is nil' do
+      let(:body) { nil }
+
+      it_behaves_like 'invalid post'
+    end
+
+    context 'when is empty' do
+      let(:body) { '' }
+
+      it_behaves_like 'invalid post'
     end
   end
 end
+
+
+#     context 'too short' do
+#       let(:title) { 'short' }
+#
+#       it 'raise exception on save' do
+#         expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
+#       end
+#     end
+
+# describe '#create' do
+#   context 'when something is like this' do
+#     subject { described_class.new.value }
+#
+#     it 'should return expected value' do
+#       expect(described_class.new.value).to eq('my expectation')
+#     end
+#
+#     it { should eq('my expectation') }
+#   end
+#
+#   context 'when something is like that' do
+#
+#   end
+# end
