@@ -5,4 +5,8 @@ class Comment < ActiveRecord::Base
   #validates :post_id, presence: true
 
   scope :for_post, -> (post_id) { where(post_id: post_id) }
+
+  def self.for_user(user_id)
+    where(user_id: user_id).references(:comments)
+  end
 end

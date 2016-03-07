@@ -1,15 +1,17 @@
 FactoryGirl.define do
   factory :post do
-
+    id 1
     title "My new title"
     body "My new body"
+    user_id 3
 
   end
 
-  # factory :short_title_post do
-  #
-  #   title "t"
-  #   body "My new body"
-  # end
+  factory :post2, class: Post do
+    id 2
+    title "My new title"
+    body "My new body"
+    user_id 3
 
+  end
 end

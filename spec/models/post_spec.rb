@@ -64,6 +64,19 @@ RSpec.describe Post, type: :model do
       it_behaves_like 'invalid post'
     end
   end
+
+  describe '#with_comments_method' do
+
+    context 'when is ok' do
+      before do
+        @post=FactoryGirl.create(:post2)
+        FactoryGirl.create(:comment)
+        FactoryGirl.create(:comment2)
+      end
+
+      it{ expect(Post.with_comments(@post.id).comments.count).to eql(2) }
+    end
+  end
 end
 
 

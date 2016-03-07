@@ -4,6 +4,7 @@ FactoryGirl.define do
     password "1234rtg"
     phone "1234567890"
     user_type "1"
+    id "3"
   end
 
 

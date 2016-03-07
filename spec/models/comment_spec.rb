@@ -36,4 +36,48 @@ RSpec.describe Comment, type: :model do
     end
   end
 
+  describe '#for_user_method' do
+    context 'when is ok' do
+      before do
+        FactoryGirl.create(:comment)
+        FactoryGirl.create(:comment2)
+        @sanja=FactoryGirl.create(:sanja)
+      end
+
+      it {expect(Comment.for_user(@sanja.id).count).to eql(2)}
+    end
+
+    context 'when is eql to database' do
+      before do
+        FactoryGirl.create(:comment)
+        FactoryGirl.create(:comment2)
+        @sanja=FactoryGirl.create(:sanja)
+      end
+
+      it {expect(Comment.for_user(@sanja.id).count).to eql(@sanja.comments.count)}
+    end
+  end
+
+  describe 'for_post' do
+    context 'when is ok' do
+      before do
+        @post=FactoryGirl.create(:post2)
+        FactoryGirl.create(:comment)
+        FactoryGirl.create(:comment2)
+      end
+
+      it {expect(Comment.for_post(@post.id).count).to eql(2)}
+    end
+
+    context 'when is eql to database' do
+      before do
+        @post=FactoryGirl.create(:post2)
+        FactoryGirl.create(:comment)
+        FactoryGirl.create(:comment2)
+      end
+
+      it {expect(Comment.for_post(@post.id).count).to eql(@post.comments.count)}
+    end
+  end
+
 end
