@@ -39,4 +39,21 @@ RSpec.describe PostsController, type: :controller do
       expect(assigns(:post).comments).to eq(@post2.comments)
     end
   end
+
+  describe 'GET #edit' do
+
+    it 'renders the edit view' do
+      get :edit, id: @post
+      expect(response). to render_template :edit
+    end
+
+    it 'shows specific post' do
+      get :edit, id: @post
+      expect(assigns(:post)).to eq(@post)
+    end
+  end
+
+  describe 'PATCH #update' do
+    #TODO
+  end
 end
