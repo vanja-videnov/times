@@ -1,0 +1,7 @@
+<% if @comments %>
+    <% @comments.each do |c| %>
+        <%= c.body %>
+    <%end %>
+<%end%>
+
+<%=link_to 'New comment', new_user_post_comment_path %>
