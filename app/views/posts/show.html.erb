@@ -1,0 +1,17 @@
+<% if @post %>
+
+    Title: <%= @post.title %>
+    <br/>
+    Body: <%= @post.body %>
+    <br/>
+
+    Comments: <br/>
+    <% @post.comments.each do |c| %>
+        *<%=link_to c.body, post_comment_path(id:c.id, post_id: @post.id) %>
+        <br/>
+    <% end %>
+
+<% end %>
+
+<br/>
+<%= link_to 'Home', root_path %>

@@ -6,10 +6,10 @@ FactoryGirl.define do
 
   end
 
-  # factory :short_title_post do
-  #
-  #   title "t"
-  #   body "My new body"
-  # end
+  factory :post2, class: Post do
+
+    title "title2"
+    body "My new body"
+  end
 
 end

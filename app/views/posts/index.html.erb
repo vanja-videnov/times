@@ -1,0 +1,13 @@
+<% if @posts %>
+    <% @posts.each do |p|%>
+
+        Title: <%= p.title %>
+        <br/>
+
+        Body: <%= p.body %>
+        <br/>
+
+        <%= link_to 'Show', post_path(id: p.id) %>
+        <br/>
+    <% end %>
+<%end %>
