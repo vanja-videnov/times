@@ -8,10 +8,16 @@ FactoryGirl.define do
   end
 
   factory :post2, class: Post do
+
     id 2
     title "My new title"
     body "My new body"
     user_id 3
 
+
+    title "title2"
+    body "My new body"
   end
-end
+
+
+  end
