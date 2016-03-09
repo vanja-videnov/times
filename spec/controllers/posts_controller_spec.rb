@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe PostsController, type: :controller do
-
+include SessionsHelper
   before do
     @post = FactoryGirl.create(:post)
     @post2 = FactoryGirl.create(:post2)
@@ -26,7 +26,7 @@ RSpec.describe PostsController, type: :controller do
 
     it 'renders the show view' do
       get :show, id: @post
-      expect(response). to render_template :show
+      expect(response).to render_template :show
     end
 
     it 'shows specific post' do
@@ -42,9 +42,16 @@ RSpec.describe PostsController, type: :controller do
 
   describe 'GET #edit' do
 
+    before do
+      @user = create(:sanja)
+      log_in(@user)
+    end
+    after do
+      log_out
+    end
     it 'renders the edit view' do
       get :edit, id: @post
-      expect(response). to render_template :edit
+      expect(response).to render_template :edit
     end
 
     it 'shows specific post' do
@@ -54,6 +61,23 @@ RSpec.describe PostsController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    #TODO
+
+    before do
+      @user = create(:sanja)
+      log_in(@user)
+    end
+    after do
+      log_out
+    end
+    it 'update specific post' do
+      patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+      @post.reload
+      expect(@post.body).to eq("This is bodybla")
+    end
+    it 'renders that post page' do
+      patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+      @post.reload
+      expect(response).to redirect_to(action: :show)
+    end
   end
 end

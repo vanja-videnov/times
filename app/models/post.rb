@@ -10,4 +10,12 @@ class Post < ActiveRecord::Base
   def self.with_comments(post_id)
     includes(:comments).where(id: post_id).first
   end
+
+  def owner
+    User.find_by(id: self.user_id)
+  end
+
+  def self.is_owner? (user_id, post_id)
+    Post.find(post_id).owner.id == user_id
+  end
 end

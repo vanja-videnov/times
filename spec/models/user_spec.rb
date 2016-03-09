@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  subject(:user) { User.new(email: email, password: password, phone: phone, name: name, user_type: user_type) }
+  subject(:user) { User.new(email: email, password: password, phone: phone, name: name, admin: admin) }
 
   let(:email) { "vanja@rbttt.com" }
   let(:password) { "12345rfvg" }
   let(:phone) { "0643335504" }
   let(:name) { "Vanja" }
-  let(:user_type) { "1" }
+  let(:admin) { true }
 
   it { expect(user).to be_valid }
 
@@ -38,6 +38,10 @@ RSpec.describe User, type: :model do
     end
 
     context "when is not unique" do
+
+      before do
+        create(:sanja)
+      end
       let(:email) { "vaca@rbt.com" }
 
       it_behaves_like "an invalid user"
@@ -96,43 +100,38 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#user_type" do
+  describe "#admin" do
 
     context "when is boolean value" do
-      let(:user_type) { true }
+      let(:admin) { true }
 
       it_behaves_like "a valid user"
     end
 
     context "when is 1 or 0 value" do
-      let(:user_type) { 1 }
+      let(:admin) { 1 }
 
       it_behaves_like "a valid user"
     end
 
     context "when is empty" do
-      let(:user_type) { "" }
+      let(:admin) { "" }
 
       it_behaves_like "an invalid user"
     end
 
     context "when is nil" do
-      let(:user_type) { nil }
+      let(:admin) { nil }
 
       it_behaves_like "an invalid user"
     end
-  end
 
-  describe "#user_data" do
+    context "when is not boolean value" do
+      let(:admin) { "bdskjbdjksbds" }
 
-    context "when all exist" do
-      let(:email) { "vanja@rbt.com" }
-      let(:name) { "Vanja" }
-      let(:phone) { "0643400444" }
-      #let(:user_data) { [name,email,phone].compact.join(' ')}
-
-      it { expect(user.user_data).to eql("Vanja vanja@rbt.com 0643400444") }
+      it_behaves_like "a valid user"
     end
   end
+
 
 end

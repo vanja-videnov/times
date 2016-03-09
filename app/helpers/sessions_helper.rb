@@ -14,6 +14,14 @@ module SessionsHelper
     !current_user.nil?
   end
 
+  def is_admin?
+    current_user.admin == true
+  end
+
+  def is_owner?(post_id)
+    Post.is_owner?(current_user.id, post_id)
+  end
+
   # Logs out the current user.
   def log_out
     session.delete(:user_id)

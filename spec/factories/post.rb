@@ -14,9 +14,6 @@ FactoryGirl.define do
     body "My new body"
     user_id 3
 
-
-    title "title2"
-    body "My new body"
   end
 
 
