@@ -1,17 +1,56 @@
-<% if @post %>
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+  </tr>
+  <% if @post %>
+          <tr>
+            <td><%= @post.title %> &nbsp; &nbsp;</td>
+            <td><%= @post.body %> <br/></td>
+          </tr>
+          <tr>
 
-    Title: <%= @post.title %>
-    <br/>
-    Body: <%= @post.body %>
-    <br/>
+            <td><% if logged_in? && is_owner?(@post) %>
+                  <%= link_to 'Edit', edit_post_path(id: @post.id) %>
+              <% end %>
+            </td>
 
-    Comments: <br/>
-    <% @post.comments.each do |c| %>
-        *<%=link_to c.body, post_comment_path(id:c.id, post_id: @post.id) %>
-        <br/>
-    <% end %>
+            <td><% if logged_in? && (is_owner?(@post) || is_admin?) %>
+                  <%= link_to 'Delete', post_path(id: @post.id), method: :delete %>
+              <% end %>
+            </td>
+          </tr>
+      <tr><td><br/>Comments:</td></tr>
+      <% if @post.comments %>
+          <table>
+            <tr>
+              <th>User &nbsp;</th>
+              <th>Text</th>
+            </tr>
+            <% @post.comments.each do |com| %>
+                <tr>
+                  <td><%= com.owner.name %> &nbsp; &nbsp;</td>
+                  <td> <%= com.body %></td>
+                  <td><% if logged_in? && is_admin?%>
+                        &nbsp; <%= link_to 'Delete', post_comment_path(id: com.id, post_id: @post.id), method: :delete  %>
+                    <%end%></td>
+                </tr>
+            <% end %>
+          </table>
+      <% end %>
+  <%end %>
 
-<% end %>
-<br/>
+
+  <% if logged_in?%>
+      <tr><td><br/></td></tr>
+      <tr>
+        <td><%= link_to 'Create new comment', new_post_comment_path(post_id: @post.id)  %></td>
+      </tr>
+  <% end %>
+
+</table>
+
+
+<br/><br/>
 
 <%= link_to 'Home', root_path %>

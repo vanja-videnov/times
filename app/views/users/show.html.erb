@@ -1,0 +1,25 @@
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Phone</th>
+  </tr>
+  <% if @user %>
+      <tr>
+        <td><%= @user.name %> &nbsp; &nbsp;</td>
+        <td><%= @user.email %> &nbsp; &nbsp;<br/></td>
+        <td><%= @user.phone %> <br/></td>
+      </tr>
+      <tr>
+        <td>
+          <%= link_to 'Edit', edit_user_path(id: @user.id) %>
+        </td>
+        <td>
+          <%= link_to 'Delete', user_path(id: @user.id), method: :delete %>
+        </td>
+      </tr>
+      <tr>
+  <% end %>
+</table>
+<br/>
+<%= link_to '<- Back to users', users_path %>

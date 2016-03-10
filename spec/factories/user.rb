@@ -1,11 +1,14 @@
 FactoryGirl.define do
   factory :sanja, class: User do
+    id 2
+    name "Sanjica"
     email "vaca@rbt.com"
     password "1234rtg"
     phone "1234567890"
     admin true
 
     factory :not_admin do
+      id 3
       email "vanja@rbttt.com"
       password "12345rfvg"
       admin false

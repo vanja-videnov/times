@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   post   'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
 
+  match 'logged_in_user' => 'posts#logged_in_user' ,via: [:get, :post]
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
@@ -20,8 +21,9 @@ Rails.application.routes.draw do
   # scope '/users' do
   #   resources :posts, :comments
   # end
+  resources :users
   resources :posts do
-    resources :comments, only:[:show]
+    resources :comments, only:[:show, :index, :create, :new, :destroy]
   end
   # Example resource route with options:
   #   resources :products do

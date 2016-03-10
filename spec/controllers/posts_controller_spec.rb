@@ -74,10 +74,52 @@ include SessionsHelper
       @post.reload
       expect(@post.body).to eq("This is bodybla")
     end
+
     it 'renders that post page' do
       patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
       @post.reload
       expect(response).to redirect_to(action: :show)
     end
+  end
+
+  describe 'DELETE #destroy' do
+    before do
+      @user = create(:sanja)
+      log_in(@user)
+    end
+    after do
+      log_out
+    end
+    it 'delete selected post' do
+      delete :destroy, id: @post
+      expect(Post.exists?(@post.id)).to be_falsey
+    end
+
+    it 'expect to render index page' do
+      delete :destroy, id: @post
+      expect(response). to redirect_to(action: :index)
+    end
+  end
+
+  describe 'GET #logged_in_user' do
+    it 'render root view when is not logged in' do
+      get :logged_in_user
+      expect(response).to redirect_to root_path
+      expect(flash[:danger]).to be_present
+    end
+    # context 'logged in' do
+    #   before do
+    #     @user = create(:sanja)
+    #     log_in(@user)
+    #   end
+    #   after do
+    #     log_out
+    #   end
+    #
+    #   it 'works nothing when logged in' do
+    #     get :logged_in_user
+    #     expect(controller).not_to set_flash[:danger]
+    #   end
+    # end
   end
 end

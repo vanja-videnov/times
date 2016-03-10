@@ -1,9 +1,5 @@
 class CommentsController < ApplicationController
-
-  def current_user
-
-  end
-
+  before_action :logged_in_user, only: [:new, :create, :destroy]
   def index
     @comments = Comment.for_post(params[:post_id])
   end
@@ -13,18 +9,34 @@ class CommentsController < ApplicationController
   end
 
   def create
-    @comment = Comment.new(body: params[:body], user_id: params[:user_id], post_id: params[:post_id])
-    #@comment = Comment.new(params.require(:comment).permit(:body, :post_id, :user_id))
+    @comment = Comment.new(comment_params)
     @comment.save
-    redirect_to user_post_comment_url(id: @comment, user_id: @comment.user_id, post_id: @comment.post_id)
+    redirect_to post_path(id: @comment.post_id)
   end
 
   def new
     @comment = Comment.new
   end
 
-  # private
-  # def comment_params
-  #   params.require(:comment).permit(:body, :user_id, :post_id)
-  # end
+  def destroy
+    @comment = Comment.find(params[:id])
+    @comment.destroy
+    redirect_to post_path(params[:post_id])
+  end
+
+  # Before filters
+
+  # Confirms a logged-in user.
+  def logged_in_user
+    unless logged_in?
+      flash[:danger] = "You must be logged in!"
+      redirect_to root_path
+    end
+  end
+  private
+  def comment_params
+    params[:comment][:user_id] = current_user.id
+    params[:comment][:post_id] = params[:post_id] || params[:id]
+    params.require(:comment).permit(:body, :user_id, :post_id)
+  end
 end

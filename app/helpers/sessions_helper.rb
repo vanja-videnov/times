@@ -29,3 +29,16 @@ module SessionsHelper
   end
 
 end
+
+# User.create() # User|false
+# User.create!() # User| raise ActiveRecord::SomeError
+#
+# User.find() # User| raise ActiveRecord::SomeError
+# User.find_by!
+
+# a = {a: 1}
+# b = {b: 2}
+#
+# a.merge(b) # => a + b
+# a = a.merge(b)
+# a.merge!(b)

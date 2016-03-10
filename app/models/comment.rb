@@ -9,4 +9,8 @@ class Comment < ActiveRecord::Base
   def self.for_user(user_id)
     where(user_id: user_id).references(:comments)
   end
+
+  def owner
+    User.find_by(id: self.user_id)
+  end
 end

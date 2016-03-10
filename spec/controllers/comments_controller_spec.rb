@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe CommentsController, type: :controller do
-
+  include SessionsHelper
   before do
     @post = FactoryGirl.create(:post)
     @user = FactoryGirl.create(:sanja)
@@ -33,32 +33,88 @@ RSpec.describe CommentsController, type: :controller do
     end
   end
 
-  # describe 'GET #new' do
-  #
-  #   it 'renders the new view' do
-  #     get :new, post_id: @post, user_id: @user
-  #     expect(response).to render_template :new
-  #   end
-  #
-  #   it 'shows requested comment' do
-  #
-  #     get :new, post_id: @post, user_id: @user
-  #     expect(assigns(:comment)).to be_instance_of Comment
-  #   end
-  # end
+  describe 'GET #new' do
 
-  # describe 'POST #create' do
-  #
-  #   it 'creates new instance of comment' do
-  #     expect{
-  #       post :create, body: @comment.body , user_id: @user, post_id: @post
-  #     }.to change(Comment,:count).by(1)
-  #   end
-  #
-  #   it 'shows created comment' do
-  #     post :create, body: @comment.body , user_id: @user, post_id: @post
-  #
-  #     expect(response). to redirect_to(user_post_comment_path)
-  #   end
-  # end
+    context 'when is not logged in' do
+      it 'renders the root view' do
+        get :new, post_id: @post
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context 'when is logged in' do
+      before do
+        log_in(@user)
+      end
+      after do
+        log_out
+      end
+      it 'shows new comment form' do
+        get :new, post_id: @post
+        expect(response).to render_template :new
+      end
+
+      it 'expect form for comment' do
+        get :new, post_id: @post
+        expect(assigns(:comment)).to be_instance_of Comment
+      end
+    end
+
+  end
+
+  describe 'POST #create' do
+
+    context 'when is not logged in' do
+      it 'dont creates new instance of comment' do
+        expect{
+          post :create, body: @comment.body, post_id: @post
+        }.not_to change(Comment,:count)
+      end
+    end
+
+    context 'when is logged in' do
+      before do
+        log_in(@user)
+        @count = Comment.count
+        @count+=1
+      end
+      after do
+        log_out
+      end
+
+      it 'creates new instance of comment' do
+        post :create, post_id: @post, comment: attributes_for(:comment, body: @comment.body)
+        expect(Comment.count).to eq(@count)
+      end
+
+      it 'show post that is commented' do
+        post :create, post_id: @post, comment: attributes_for(:comment, body: @comment.body)
+        expect(response).to redirect_to post_path(id: @post.id)
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    context 'when is logged in as admin' do
+      before do
+        log_in(@user)
+      end
+      after do
+        log_out
+      end
+      it 'destroy commment' do
+        delete :destroy, post_id: @post, id: @comment
+        expect(response).to redirect_to post_path(@post.id)
+      end
+    end
+
+    context 'when is not logged in' do
+      it 'dont delete comment' do
+        delete :destroy, post_id: @post, id: @comment
+        expect(response).to redirect_to root_path
+      end
+    end
+
+  end
+
 end
