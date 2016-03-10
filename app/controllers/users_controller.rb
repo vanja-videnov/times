@@ -1,11 +1,25 @@
 class UsersController < ApplicationController
-  before_action :logged_in_admin
+  before_action :logged_in_admin, except: [:new, :create]
   def index
     @users = User.all
   end
 
+  def new
+    @user = User.new
+  end
+
   def show
     @user = User.find(params[:id])
+  end
+
+  def create
+    @user = User.new(user_params_for_create)
+
+    if @user.save
+      redirect_to login_path
+    else
+      render 'new'
+    end
   end
 
   def edit
@@ -42,5 +56,9 @@ class UsersController < ApplicationController
   def user_params
     # params[:user][:id] = current_user.id
     params.require(:user).permit(:name, :email, :admin, :phone)
+  end
+  def user_params_for_create
+    params[:user][:admin] = false
+    params.require(:user).permit(:name, :email, :admin, :phone, :password)
   end
 end
