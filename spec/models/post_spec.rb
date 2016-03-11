@@ -77,6 +77,50 @@ RSpec.describe Post, type: :model do
       it{ expect(Post.with_comments(@post.id).comments.count).to eql(2) }
     end
   end
+
+  describe 'is owner class method' do
+    before do
+      @post2 = FactoryGirl.create(:post2)
+      @user = FactoryGirl.create(:sanja)
+      @user2 = FactoryGirl.create(:not_admin)
+    end
+    context 'when is owner' do
+      it 'returns true' do
+        expect(Post.is_owner?(@user.id,@post2.id)).to eq(true)
+      end
+    end
+    context 'when is not owner' do
+      it 'returns false' do
+        expect(Post.is_owner?(@user2.id,@post2.id)).to eq(false)
+      end
+    end
+  end
+
+  describe 'is owner instance method' do
+    before do
+      @post2 = FactoryGirl.create(:post2)
+      @user = FactoryGirl.create(:sanja)
+      @user2 = FactoryGirl.create(:not_admin)
+    end
+    context 'when is owner' do
+      it 'returns true' do
+        expect(@post2.owner).to eq(@user)
+      end
+    end
+    context 'when is not owner' do
+      it 'returns false' do
+        expect(@post2.owner).not_to eq(@user2)
+      end
+    end
+  end
+
+
+  # describe 'with comments' do
+  #   context 'returns '
+  #   def self.with_comments(post_id)
+  #     includes(:comments).where(id: post_id).first
+  #   end
+  # end
 end
 
 

@@ -42,6 +42,58 @@ include SessionsHelper
     end
   end
 
+  describe 'GET #new' do
+    before do
+      log_in(@user)
+    end
+    after do
+      log_out
+    end
+    it 'renders the new view' do
+      get :new
+      expect(response).to render_template :new
+    end
+  end
+
+  describe 'POST #create' do
+    before do
+      @count = Post.count
+      @count+=1
+    end
+    context 'when is not logged in' do
+      it 'dont creates new instance of post' do
+        expect{
+          post :create, title: @post.title, body: @post.body, user_id: @post.user_id
+        }.not_to change(Post,:count)
+      end
+    end
+
+    context 'when is logged in' do
+      before do
+        log_in(@user)
+      end
+      after do
+        log_out
+      end
+
+      it 'creates new instance of post' do
+        post :create, post: attributes_for(:post)
+        expect(Post.count).to eq(@count)
+      end
+
+      it 'show post that is created' do
+        post :create, post: attributes_for(:post)
+        expect(response).to redirect_to post_path(id: Post.last.id)
+      end
+
+      it 'render new page if params are not valid' do
+        post :create, post: attributes_for(:post, title: "v")
+        expect(response).to render_template :new
+      end
+    end
+
+  end
+
   describe 'GET #edit' do
     before do
       log_in(@user)
@@ -96,6 +148,27 @@ include SessionsHelper
       it 'dont show specific post' do
         get :edit, id: @post
         expect(assigns(:post)).to be_falsey
+      end
+
+      it 'render the root view' do
+        get :edit, id: @post
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context 'when is logged in but not the owner' do
+      before do
+        log_out
+        @test_user = FactoryGirl.create(:user_3)
+        log_in(@test_user)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'render the root view' do
+        get :edit, id: @post
+        expect(response).to redirect_to root_path
       end
     end
 
@@ -166,6 +239,44 @@ include SessionsHelper
       end
     end
 
+    context 'when is logged in but not the owner' do
+      before do
+        log_out
+        @test_user = FactoryGirl.create(:user_3)
+        log_in(@test_user)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'render the root view' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context 'when is owner but params are wrong' do
+      before do
+        log_out
+        log_in(@user2)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'update specific post' do
+        patch :update, id: @post, post: attributes_for(:post, body: "T")
+        @post.reload
+        expect(@post.body).not_to eq("This is bodybla")
+      end
+
+      it 'renders edit page' do
+        patch :update, id: @post, post: attributes_for(:post, body: "T")
+        @post.reload
+        expect(response).to render_template :edit
+      end
+    end
+
   end
 
   describe 'DELETE #destroy' do
@@ -222,7 +333,23 @@ include SessionsHelper
 
       it 'expect not to render index page' do
         delete :destroy, id: @post
-        expect(response). to redirect_to root_path
+        expect(response).to redirect_to root_path
+      end
+
+    end
+    context 'when is logged in but not the owner' do
+      before do
+        log_out
+        @test_user = FactoryGirl.create(:user_3)
+        log_in(@test_user)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'render the root view' do
+        delete :destroy, id: @post
+        expect(response).to redirect_to root_path
       end
     end
 
@@ -249,4 +376,5 @@ include SessionsHelper
     #   end
     # end
   end
+
 end

@@ -41,20 +41,20 @@ RSpec.describe Comment, type: :model do
       before do
         FactoryGirl.create(:comment)
         FactoryGirl.create(:comment2)
-        @sanja=FactoryGirl.create(:sanja)
+        @user=FactoryGirl.create(:not_admin)
       end
 
-      it {expect(Comment.for_user(@sanja.id).count).to eql(2)}
+      it {expect(@user.comments.count).to eql(2)}
     end
 
     context 'when is eql to database' do
       before do
         FactoryGirl.create(:comment)
         FactoryGirl.create(:comment2)
-        @sanja=FactoryGirl.create(:sanja)
+        @user=FactoryGirl.create(:sanja)
       end
 
-      it {expect(Comment.for_user(@sanja.id).count).to eql(@sanja.comments.count)}
+      it {expect(Comment.for_user(@user.id).count).to eql(@user.comments.count)}
     end
   end
 
@@ -77,6 +77,25 @@ RSpec.describe Comment, type: :model do
       end
 
       it {expect(Comment.for_post(@post.id).count).to eql(@post.comments.count)}
+    end
+  end
+
+  describe '#owner' do
+    before do
+      @com2 = FactoryGirl.create(:comment2)
+      @com = FactoryGirl.create(:comment2, user_id: 2)
+      @not_admin = FactoryGirl.create(:not_admin)
+      @admin = FactoryGirl.create(:sanja)
+    end
+    context 'when is owner' do
+      it 'returns comment owner' do
+        expect(User.find_by(id: @com2.user_id)).to eq(@com2.owner)
+      end
+    end
+    context 'when is not owner' do
+      it 'dont return comment owner' do
+        expect(User.find_by(id: @com2.user_id)).not_to eq(@com.owner)
+      end
     end
   end
 

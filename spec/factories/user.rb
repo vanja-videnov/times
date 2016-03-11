@@ -14,6 +14,14 @@ FactoryGirl.define do
       password "12345rfvg"
       admin false
     end
+
+    factory :user_3 do
+      id 4
+      name "Marijica"
+      email "vanjasss@rbttt.com"
+      password "12345rfvg"
+      admin false
+    end
   end
 
 

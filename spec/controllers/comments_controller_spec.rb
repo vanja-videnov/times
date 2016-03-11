@@ -8,18 +8,18 @@ RSpec.describe CommentsController, type: :controller do
     @user2 = FactoryGirl.create(:not_admin)
     @comment = FactoryGirl.create(:comment)
   end
-  # describe 'GET #index' do
-  #
-  #   it 'renders the index view' do
-  #     get :index, post_id: @post, user_id: @user
-  #     expect(response). to render_template :index
-  #   end
-  #
-  #   it 'shows comments for post' do
-  #     get :index, post_id: @post, user_id: @user
-  #     expect(assigns(:comments)).to eq(@post.comments)
-  #   end
-  # end
+  describe 'GET #index' do
+
+    it 'renders the index view' do
+      get :index, post_id: @post, user_id: @user
+      expect(response). to render_template :index
+    end
+
+    it 'shows comments for post' do
+      get :index, post_id: @post, user_id: @user
+      expect(assigns(:comments)).to eq(@post.comments)
+    end
+  end
 
   describe 'GET #show' do
 

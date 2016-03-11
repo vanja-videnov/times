@@ -46,6 +46,7 @@ gem 'factory_girl_rails','~> 4.0'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
+  gem 'simplecov', '~> 0.11.2', require: false
 end
 
 group :development do

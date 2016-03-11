@@ -19,11 +19,6 @@ class User < ActiveRecord::Base
 
 	def authenticate(password)
 		hash = BCrypt::Engine.hash_secret(password, self.salt)
-		# if hash == self.password
-		# 	true
-		# else
-		# 	false
-		# end
 		hash == self.password
 	end
 
