@@ -12,7 +12,7 @@ FactoryGirl.define do
     id 2
     title "My new title"
     body "My new body"
-    user_id 3
+    user_id 2
 
   end
 

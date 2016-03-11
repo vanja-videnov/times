@@ -7,6 +7,8 @@ include SessionsHelper
     @post2 = FactoryGirl.create(:post2)
     @posts = [@post, @post2]
     @comment = FactoryGirl.create(:comment)
+    @user = FactoryGirl.create(:sanja)
+    @user2 = FactoryGirl.create(:not_admin)
   end
 
   describe 'GET #index' do
@@ -41,64 +43,189 @@ include SessionsHelper
   end
 
   describe 'GET #edit' do
-
     before do
-      @user = create(:sanja)
       log_in(@user)
     end
     after do
       log_out
     end
-    it 'renders the edit view' do
-      get :edit, id: @post
-      expect(response).to render_template :edit
+    context 'when is admin' do
+      it 'renders the edit view' do
+        get :edit, id: @post
+        expect(response).to render_template :edit
+      end
+
+      it 'shows specific post' do
+        get :edit, id: @post
+        expect(assigns(:post)).to eq(@post)
+      end
     end
 
-    it 'shows specific post' do
-      get :edit, id: @post
-      expect(assigns(:post)).to eq(@post)
+    context 'when is logged user owner' do
+      before do
+        log_out
+        log_in(@user2)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'renders the edit view' do
+        get :edit, id: @post
+        expect(response).to render_template :edit
+      end
+
+      it 'shows specific post' do
+        get :edit, id: @post
+        expect(assigns(:post)).to eq(@post)
+      end
     end
+
+    context 'when is not logged in' do
+      before do
+        log_out
+      end
+      after do
+        log_in(@user)
+      end
+      it 'dont render the edit view' do
+        get :edit, id: @post
+        expect(response).not_to render_template :edit
+      end
+
+      it 'dont show specific post' do
+        get :edit, id: @post
+        expect(assigns(:post)).to be_falsey
+      end
+    end
+
   end
 
   describe 'PATCH #update' do
 
     before do
-      @user = create(:sanja)
       log_in(@user)
     end
     after do
       log_out
     end
-    it 'update specific post' do
-      patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
-      @post.reload
-      expect(@post.body).to eq("This is bodybla")
+
+    context 'when is admin' do
+      it 'update specific post' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        @post.reload
+        expect(@post.body).to eq("This is bodybla")
+      end
+
+      it 'renders that post page' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        @post.reload
+        expect(response).to redirect_to(action: :show)
+      end
     end
 
-    it 'renders that post page' do
-      patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
-      @post.reload
-      expect(response).to redirect_to(action: :show)
+    context 'when logged user is owner' do
+      before do
+        log_out
+        log_in(@user2)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'update specific post' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        @post.reload
+        expect(@post.body).to eq("This is bodybla")
+      end
+
+      it 'renders that post page' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        @post.reload
+        expect(response).to redirect_to(action: :show)
+      end
     end
+
+    context 'when is not logged in' do
+      before do
+        log_out
+      end
+      after do
+        log_in(@user2)
+      end
+      it 'dont update specific post' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        @post.reload
+        expect(@post.body).not_to eq("This is bodybla")
+      end
+
+      it 'dont render that post page' do
+        patch :update, id: @post, post: attributes_for(:post, body: "This is bodybla")
+        @post.reload
+        expect(response).not_to redirect_to(action: :show)
+      end
+    end
+
   end
 
   describe 'DELETE #destroy' do
     before do
-      @user = create(:sanja)
       log_in(@user)
     end
     after do
       log_out
     end
-    it 'delete selected post' do
-      delete :destroy, id: @post
-      expect(Post.exists?(@post.id)).to be_falsey
+
+    context 'when is admin' do
+      it 'delete selected post' do
+        delete :destroy, id: @post
+        expect(Post.exists?(@post.id)).to be_falsey
+      end
+
+      it 'expect to render index page' do
+        delete :destroy, id: @post
+        expect(response). to redirect_to(action: :index)
+      end
     end
 
-    it 'expect to render index page' do
-      delete :destroy, id: @post
-      expect(response). to redirect_to(action: :index)
+    context 'when logged user is owner' do
+      before do
+        log_out
+        log_in(@user2)
+      end
+      after do
+        log_out
+        log_in(@user)
+      end
+      it 'delete selected post' do
+        delete :destroy, id: @post
+        expect(Post.exists?(@post.id)).to be_falsey
+      end
+
+      it 'expect to render index page' do
+        delete :destroy, id: @post
+        expect(response). to redirect_to(action: :index)
+      end
     end
+
+    context 'when is not logged in' do
+      before do
+        log_out
+      end
+      after do
+        log_in(@user)
+      end
+      it 'dont delete selected post' do
+        delete :destroy, id: @post
+        expect(Post.exists?(@post.id)).to be_truthy
+      end
+
+      it 'expect not to render index page' do
+        delete :destroy, id: @post
+        expect(response). to redirect_to root_path
+      end
+    end
+
   end
 
   describe 'GET #logged_in_user' do

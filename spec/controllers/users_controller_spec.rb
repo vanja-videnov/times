@@ -83,6 +83,45 @@ RSpec.describe UsersController, type: :controller do
 
   end
 
+  describe 'GET #new' do
+    it 'renders the new view' do
+      get :new
+      expect(response).to render_template :new
+    end
+  end
+
+  describe 'POST #create' do
+    before do
+      @count = User.count
+      @count+=1
+    end
+
+    context 'when params are valid' do
+      it 'creates new instance of user' do
+        post :create, user: attributes_for(:sanja, email: "sanja2@rbt.com")
+        expect(User.count).to eq(@count)
+      end
+
+      it 'show root path' do
+        post :create,  user: attributes_for(:sanja, email: "sanja2@rbt.com")
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context 'when params are not valid' do
+      it 'dont create new instance of user' do
+        post :create, user: attributes_for(:sanja, email: "srbt.com")
+        expect(User.count).not_to eq(@count)
+      end
+
+      it 'renders form again' do
+        post :create,  user: attributes_for(:sanja, email: "s2rbt.com")
+        expect(response).to render_template :new
+      end
+    end
+
+  end
+
   describe 'GET #edit' do
     context 'when is not current user' do
       before do
@@ -277,6 +316,63 @@ RSpec.describe UsersController, type: :controller do
       it 'dont expect to render index page' do
         delete :destroy, id: @user
         expect(response).not_to redirect_to(action: :index)
+      end
+    end
+
+  end
+
+  describe '#GET posts_show' do
+    before do
+      @post = FactoryGirl.create(:post)
+      @post2 = FactoryGirl.create(:post2)
+      @posts_admin = [@post2]
+      @posts_not_admin = [@post]
+    end
+    context 'when is admin' do
+      it 'expect to render users post page' do
+        get :posts_show
+        expect(response).to render_template :posts_show
+      end
+      it 'expect to show users post' do
+        get :posts_show
+        expect(assigns(:posts)).to eq(@posts_admin)
+      end
+    end
+
+    context 'when is logged in user' do
+      before do
+        log_out
+        log_in(@user)
+      end
+      after do
+        log_out
+        log_in(@user2)
+      end
+      it 'expect to render users post page' do
+        get :posts_show
+        expect(response).to render_template :posts_show
+      end
+      it 'expect to show users post' do
+        get :posts_show
+        expect(assigns(:posts)).to eq(@posts_not_admin)
+      end
+    end
+
+    context 'when is not logged user' do
+      before do
+        log_out
+      end
+      after do
+        log_in(@user2)
+      end
+
+      it 'expect not to render users post page' do
+        get :posts_show
+        expect(response).not_to render_template :posts_show
+      end
+      it 'expect not to show users post' do
+        get :posts_show
+        expect(assigns(:posts)).to be_falsey
       end
     end
 

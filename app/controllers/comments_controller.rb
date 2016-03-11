@@ -19,9 +19,13 @@ class CommentsController < ApplicationController
   end
 
   def destroy
+    if is_admin?
     @comment = Comment.find(params[:id])
     @comment.destroy
     redirect_to post_path(params[:post_id])
+    else
+      redirect_to root_path
+    end
   end
 
   # Before filters

@@ -11,17 +11,6 @@
           </tr>
           <tr>
             <td><%= link_to 'Show', post_path(id: p.id) %></td>
-
-
-            <td><% if logged_in? && is_owner?(p) %>
-                <%= link_to 'Edit', edit_post_path(id: p.id) %>
-                <% end %>
-            </td>
-
-            <td><% if logged_in? && (is_owner?(p) || is_admin?) %>
-                <%= link_to 'Delete', post_path(id: p.id), method: :delete %>
-                <% end %>
-            </td>
         </tr>
     <% end %>
 <%end %>

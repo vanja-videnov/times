@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :logged_in_user, only: [:edit, :update]
+  before_action :logged_in_user, except: [:index, :show]
   def index
     @posts = Post.all
   end
@@ -23,24 +23,36 @@ class PostsController < ApplicationController
   end
 
   def edit
-    @post = Post.find(params[:id])
+    if is_owner_or_admin(params[:id])
+      @post = Post.find(params[:id])
+    else
+      redirect_to root_path
+    end
   end
 
   def update
-    @post = Post.find(params[:id])
+    if is_owner_or_admin(params[:id])
+      @post = Post.find(params[:id])
 
-    if @post.update(post_params)
-      redirect_to @post
+      if @post.update(post_params)
+        redirect_to @post
+      else
+        render 'edit'
+      end
     else
-      render 'edit'
+      redirect_to root_path
     end
   end
 
   def destroy
-    @post = Post.find(params[:id])
-    @post.destroy
+    if is_owner_or_admin(params[:id])
+      @post = Post.find(params[:id])
+      @post.destroy
 
-    redirect_to action: :index
+      redirect_to action: :index
+    else
+      redirect_to root_path
+    end
   end
 
   # Before filters
@@ -51,6 +63,10 @@ class PostsController < ApplicationController
       flash[:danger] = "You must be logged in!"
       redirect_to root_path
     end
+  end
+
+  def is_owner_or_admin(post_id)
+    is_owner?(post_id) || is_admin?
   end
 
 

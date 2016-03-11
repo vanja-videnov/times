@@ -10,15 +10,14 @@
           </tr>
           <tr>
 
-            <td><% if logged_in? && is_owner?(@post) %>
+            <% if logged_in? && (is_owner?(@post) || is_admin?) %>
+                <td>
                   <%= link_to 'Edit', edit_post_path(id: @post.id) %>
-              <% end %>
-            </td>
-
-            <td><% if logged_in? && (is_owner?(@post) || is_admin?) %>
+                </td>
+                <td>
                   <%= link_to 'Delete', post_path(id: @post.id), method: :delete %>
-              <% end %>
-            </td>
+                </td>
+            <% end %>
           </tr>
       <tr><td><br/>Comments:</td></tr>
       <% if @post.comments %>

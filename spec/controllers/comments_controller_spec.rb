@@ -5,6 +5,7 @@ RSpec.describe CommentsController, type: :controller do
   before do
     @post = FactoryGirl.create(:post)
     @user = FactoryGirl.create(:sanja)
+    @user2 = FactoryGirl.create(:not_admin)
     @comment = FactoryGirl.create(:comment)
   end
   # describe 'GET #index' do
@@ -105,6 +106,23 @@ RSpec.describe CommentsController, type: :controller do
       it 'destroy commment' do
         delete :destroy, post_id: @post, id: @comment
         expect(response).to redirect_to post_path(@post.id)
+      end
+    end
+
+    context 'when is logged in as regular user' do
+      before do
+        log_in(@user2)
+      end
+      after do
+        log_out
+      end
+      it 'dont destroy commment' do
+        delete :destroy, post_id: @post, id: @comment
+        expect(response).not_to redirect_to post_path(@post.id)
+      end
+      it 'dont delete comment' do
+        delete :destroy, post_id: @post, id: @comment
+        expect(Comment.exists?(@post.id)).to be_truthy
       end
     end
 

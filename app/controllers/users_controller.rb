@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-  before_action :logged_in_admin, except: [:new, :create, :edit, :update]
+  before_action :logged_in_admin, except: [:new, :create, :edit, :update, :posts_show]
+  before_action :logged_in, except: [:new, :create]
   def index
     @users = User.all
   end
@@ -20,7 +21,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params_for_create)
 
     if @user.save
-      redirect_to login_path
+      redirect_to root_path
     else
       render 'new'
     end
@@ -61,6 +62,12 @@ class UsersController < ApplicationController
   def logged_in_admin
     unless logged_in? && is_admin?
       flash[:danger] = 'You must be admin for that privilege'
+      redirect_to root_path
+    end
+  end
+
+  def logged_in
+    unless logged_in?
       redirect_to root_path
     end
   end
