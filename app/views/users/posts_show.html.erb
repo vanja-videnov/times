@@ -1,0 +1,37 @@
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+  </tr>
+  <% if @posts %>
+      <% @posts.each do |p|%>
+          <tr>
+            <td><%= p.title %> &nbsp;&nbsp;</td>
+            <td><%= p.body %> <br/></td>
+          </tr>
+          <tr>
+            <td><%= link_to 'Show', post_path(id: p.id) %></td>
+
+
+            <td><% if logged_in? && is_owner?(p) %>
+                  <%= link_to 'Edit', edit_post_path(id: p.id) %>
+              <% end %>
+            </td>
+
+            <td><% if logged_in? && (is_owner?(p) || is_admin?) %>
+                  <%= link_to 'Delete', post_path(id: p.id), method: :delete %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+  <%end %>
+
+
+  <% if logged_in?%>
+      <tr><td><br/><br/></td></tr>
+      <tr>
+        <td><%= link_to 'Create new', new_post_path  %></td>
+      </tr>
+  <% end %>
+
+</table>

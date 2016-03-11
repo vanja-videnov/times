@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :logged_in_admin, except: [:new, :create]
+  before_action :logged_in_admin, except: [:new, :create, :edit, :update]
   def index
     @users = User.all
   end
@@ -10,6 +10,10 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+  end
+
+  def posts_show
+    @posts = current_user.posts
   end
 
   def create
@@ -23,16 +27,25 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
+    if logged_for_edit_and_update(params[:id])
+      @user = User.find(params[:id])
+      render 'edit'
+    else
+      redirect_to root_path
+    end
   end
 
   def update
-    @user = User.find(params[:id])
+    if logged_for_edit_and_update(params[:id])
+      @user = User.find(params[:id])
 
-    if @user.update(user_params)
-      redirect_to @user
+      if @user.update(user_params)
+        redirect_to @user
+      else
+        render 'edit'
+      end
     else
-      render 'edit'
+      redirect_to root_path
     end
   end
 
@@ -52,10 +65,14 @@ class UsersController < ApplicationController
     end
   end
 
+  def logged_for_edit_and_update(id)
+     logged_in? && ((current_user.id.to_s == id) || is_admin?)
+  end
+
   private
   def user_params
     # params[:user][:id] = current_user.id
-    params.require(:user).permit(:name, :email, :admin, :phone)
+    params.require(:user).permit(:name, :email, :admin, :phone, :password)
   end
   def user_params_for_create
     params[:user][:admin] = false

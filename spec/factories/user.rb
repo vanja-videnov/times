@@ -9,6 +9,7 @@ FactoryGirl.define do
 
     factory :not_admin do
       id 3
+      name "Marijica"
       email "vanja@rbttt.com"
       password "12345rfvg"
       admin false
